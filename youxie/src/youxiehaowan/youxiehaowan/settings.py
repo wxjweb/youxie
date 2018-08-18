@@ -16,6 +16,9 @@ import logging
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+FILE_UPLOAD_TEMP_DIR = os.path.join(BASE_DIR, 'tmp')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -43,6 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'haowan.apps.HaowanConfig',
+    'rest_framework',
+    'main',
+    # 'db'
 ]
 
 MIDDLEWARE = [
@@ -60,8 +66,7 @@ ROOT_URLCONF = 'youxiehaowan.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'webui')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'webui').replace("\\", "/")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,6 +78,17 @@ TEMPLATES = [
         },
     },
 ]
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'webui/web').replace('\\', '/'),
+    # os.path.join(BASE_DIR, 'webui').replace('\\', '/'),
+]
+
+# STATIC_ROOT = os.path.join(BASE_DIR, 'webui')
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'),
+)
 
 WSGI_APPLICATION = 'youxiehaowan.wsgi.application'
 
@@ -126,4 +142,73 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_URL = '/static/'
+# STATIC_URL = '/static/'
+STATIC_URL = '/web/'
+LOGIN_URL = '/login/'
+
+#################################
+# guardian settings
+#################################
+AUTHENTICATION_BACKENDS = (
+    'system.admin.auth.SgBackend',
+    # 'django.contrib.auth.backends.ModelBackend', # this is default
+    # 'guardian.backends.ObjectPermissionBackend',
+)
+
+ANONYMOUS_USER_ID = -1
+
+#################################
+# Django REST framework settings
+#################################
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAdminUser',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework.filters.DjangoFilterBackend',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        # 'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
+    'EXCEPTION_HANDLER': 'main.env.sg_exception_handler',
+    'PAGE_SIZE': 20
+    # 'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.StandardResultsSetPagination'
+}
+
+############
+# SESSIONS #
+############
+# Cache to store session data if using the cache session backend.
+# SESSION_CACHE_ALIAS = 'default'
+# Cookie name. This can be whatever you want.
+# SESSION_COOKIE_NAME = 'sessionid'
+# A string like ".example.com", or None for standard domain cookie.
+# SESSION_COOKIE_DOMAIN = None
+# Whether the session cookie should be secure (https:// only).
+SESSION_COOKIE_SECURE = False if DEBUG else True
+# The path of the session cookie.
+# SESSION_COOKIE_PATH = '/'
+# Whether to use the non-RFC standard httpOnly flag (IE, FF3+, others)
+SESSION_COOKIE_HTTPONLY = True
+# Whether to save the session data on every request.
+# SESSION_SAVE_EVERY_REQUEST = False
+# The module to store session data
+# SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+# Directory to store session files if using the file session module.
+# If None, the backend will use a sensible default.
+# SESSION_FILE_PATH = None
+# class to serialize session data
+# SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
+# Age of cookie, in seconds (default: 2 weeks). Now is 5 minutes
+SESSION_COOKIE_AGE = 60*60*24
+# Whether a user's session cookie expires when the Web browser is closed.
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+
+
+
