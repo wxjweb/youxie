@@ -3,6 +3,7 @@
 CURDIR=$(cd "$(dirname $0)"; pwd)
 TOPDIR=`dirname $(dirname $CURDIR)`
 
+echo $CURDIR
 echo $TOPDIR
 
 SQLDIR=$CURDIR
