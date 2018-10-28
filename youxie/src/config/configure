@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+#
+# this file tries to build Makefile and compiling ENV
+#
+#
+
+CFGDIR=`cd \`echo $0 | sed -e 's,[^/]*$,,;s,/$,,;s,^$,.,'\`; ${PWDCMD-pwd}`
+SRCDIR=`cd \`echo ${CFGDIR} | sed -e 's,[^/]*$,,;s,/$,,;s,^$,.,'\`; ${PWDCMD-pwd}`
+TOPDIR=`${PWDCMD-pwd}`
+
+echo $0
+echo $CFGDIR
+echo $SRCDIR
+echo $TOPDIR
+
+export SRCDIR TOPDIR
+
+# SET MAIN MAKE ENTRY
+ln -sf ${SRCDIR}/config/mk.inf ${TOPDIR}/mk.inf
+cat > ${TOPDIR}/Makefile << EOF
+## MAIN MAKE ENTRY by config ##
+
+SRCDIR = ${SRCDIR}
+TOPDIR = ${TOPDIR}
+
+include ./config.status
+include ./mk.inf
+include \$(SRCDIR)/config/Top.mak
+EOF
+
+# READ MAKE CONFIG
+ln -sf ${SRCDIR}/config/gencfg ${TOPDIR}/gencfg
+${TOPDIR}/gencfg -c
+if [ $? -ne 0 ]; then
+    echo "gencfg err"
+fi
+
+# MAKE PREPARE
+make -C ${TOPDIR} prepare
+
+exit 0
+
+
+

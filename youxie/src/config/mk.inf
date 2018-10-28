@@ -1,0 +1,3 @@
+SUBDIRS = script etc include opensrc-indep lib opensrc service cli youxiehaowan oem
+
+OBJDIRS = libs bin
